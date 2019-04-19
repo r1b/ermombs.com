@@ -1,0 +1,8 @@
+((components
+ (extension gliva))
+ (version 1.0)
+ (license "BSD")
+ (author "Robert C Jensen")
+ (synopsis "Art website")
+ (dependencies posix-groups spiffy sqlite3 utf8)
+ (test-dependencies test))
