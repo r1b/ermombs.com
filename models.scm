@@ -22,7 +22,7 @@
              ('cv.pdf', 'mattgliva@gmail.com', 'image.jpg');")
     (execute db "
              insert into gliva_work values
-             ('foo', '2019', '1 x 1', 'paper', 'image.jpg', null);")))
+             ('foo', '2019', '1 x 1', 'paper', 'image.jpg', null, 'foo');")))
 
 (define (row->result statement)
   (letrec ((n (column-count statement))
@@ -45,7 +45,7 @@
   (let-values (((statement _) (prepare db sql)))
     (begin
       (unless (null? params)
-        ((cut bind-parameters! statement <...>) params))
+        (apply (cut bind-parameters! statement <>) params))
       (get-rows statement))))
 
 (define (select-home-page-data)
@@ -55,4 +55,8 @@
       (display info)
       (display works))))
 
-(define (main _) (select-home-page-data))
+(define (select-work-page-data slug)
+  (let ((work (execute-query "select * from gliva_work where slug = ?;" slug)))
+    (display work)))
+
+(define (main _) (select-work-page-data "foo"))

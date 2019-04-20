@@ -4,5 +4,5 @@
  (license "BSD")
  (author "Robert C Jensen")
  (synopsis "Art website")
- (dependencies posix-groups spiffy sqlite3 utf8)
+ (dependencies posix-groups spiffy sqlite3 sxml-serializer utf8)
  (test-dependencies test))
