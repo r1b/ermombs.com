@@ -5,3 +5,6 @@
 *.o
 *.so
 *.sh
+*.db
+gliva-server
+seed-db
