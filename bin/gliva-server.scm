@@ -6,6 +6,9 @@
 (spiffy-user "nobody")
 (spiffy-group "nobody")
 
+; FIXME absolute path, this is just for dev
+(root-path "../static")
+
 (vhost-map `(("localhost" . ,route-request)))
 
 (start-server)

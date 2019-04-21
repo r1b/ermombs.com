@@ -8,3 +8,4 @@
 *.db
 gliva-server
 seed-db
+static/

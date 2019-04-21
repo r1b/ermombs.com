@@ -1,6 +1,12 @@
 ((components
    (extension db)
-   (extension gliva)
+   (extension data
+              (component-dependencies db))
+   (extension styles)
+   (extension templates
+              (component-dependencies styles))
+   (extension gliva
+              (component-dependencies data templates))
    (program gliva-server
             (component-dependencies gliva)
             (source "bin/gliva-server.scm"))
@@ -11,5 +17,5 @@
  (license "BSD")
  (author "Robert C Jensen")
  (synopsis "Art website")
- (dependencies intarweb posix-groups spiffy sqlite3 sxml-serializer utf8)
+ (dependencies intarweb posix-groups scss spiffy sql-null sqlite3 sxml-serializer utf8)
  (test-dependencies test))
