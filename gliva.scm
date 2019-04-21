@@ -1,11 +1,13 @@
 (include "db")
 
 (module gliva (route-request)
-  (import (chicken irregex)
+  (import (chicken base)
+          (chicken irregex)
           db
           intarweb
           scheme
           spiffy
+          sql-null
           sxml-serializer)
 
   (define (select-home-page-data)
@@ -27,11 +29,14 @@
                  ,featured-content-template))`)
 
   (define (render-work work)
-    (let ((slug (cdr (assoc 'slug work))))
-      `(li (a (@ (href ,(string-append "/" slug)))))))
+    (let ((slug (cdr (assoc 'slug work)))
+          (title (cdr (assoc 'title work))))
+      `(li (a (@ (href ,(string-append "/" slug))) ,title))))
 
-  (define (render-series works rendered-series this-series rendered-works )
-    (if (or (null? works) (not (string=? (assoc 'series (car works)) this-series)))
+  (define (render-series works rendered-series rendered-works this-series)
+    (if (or (null? works)
+            (sql-null? (cdr (assoc 'series (car works))))
+            (not (string=? (cdr (assoc 'series (car works))) this-series)))
         (render-works works
                       (append rendered-works
                               (list (cons 'ol rendered-series))))
@@ -69,13 +74,13 @@
   (define (featured-content-template info)
     (let ((featured-image-filename (cdr (assoc 'featured_image_filename info))))
       `(div (@ (class "featured-content"))
-          (img (@ (src ,(string-append "/" 'featured_image_filename)))))))
+          (img (@ (src ,(string-append "/" featured-image-filename)))))))
 
   (define (render-home-page)
     (let-values (((info works) (select-home-page-data)))
       (send-response status: 'ok
-                   body: (serialize-sxml (base-template (sidebar-template info works)
-                                                        (featured-content-template info))))))
+                     body: (serialize-sxml (base-template (sidebar-template info works)
+                                                          (featured-content-template info))))))
   ; TODO irregex
   (define (route-request continue)
     (begin (render-home-page)

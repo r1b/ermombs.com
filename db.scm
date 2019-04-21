@@ -18,7 +18,7 @@
   (define (get-rows statement #!optional (rows '()))
     (if (not (step! statement))
         (if (= (length rows) 1) (car rows) rows)
-        (get-rows statement (append rows (row->result statement)))))
+        (get-rows statement (append rows (list (row->result statement))))))
 
   (define (execute-query sql . params)
     (let-values (((statement _) (prepare db sql)))
