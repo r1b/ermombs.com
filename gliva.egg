@@ -17,5 +17,14 @@
  (license "BSD")
  (author "Robert C Jensen")
  (synopsis "Art website")
- (dependencies intarweb posix-groups scss spiffy sql-null sqlite3 sxml-serializer utf8)
+ (dependencies intarweb
+               matchable
+               posix-groups
+               scss
+               spiffy
+               sql-null
+               sqlite3
+               sxml-serializer
+               uri-common
+               utf8)
  (test-dependencies test))

@@ -1,7 +1,7 @@
 (include "styles")
 
 (module templates (base-template featured-content-template sidebar-template work-template)
-  (import scheme styles sql-null)
+  (import (chicken format) scheme styles sql-null)
 
   ; ---------------------------------------------------------------------------
 
@@ -65,4 +65,23 @@
   (define (featured-content-template info)
     (let ((featured-image-filename (cdr (assoc 'featured_image_filename info))))
       `(div (@ (class "featured-content"))
-          (img (@ (src ,(string-append "/static/" featured-image-filename))))))))
+          (img (@ (src ,(string-append "/static/" featured-image-filename)))))))
+
+  ; ---------------------------------------------------------------------------
+
+  (define (render-work-info work)
+    (let ((title (cdr (assoc 'title work)))
+          (year (cdr (assoc 'year work)))
+          (dimensions (cdr (assoc 'dimensions work)))
+          (materials (cdr (assoc 'materials work))))
+      `(div (@ (class "work-info"))
+            (ol (li (b ,(sprintf "~A, ~A" title year)))
+                (li ,dimensions)
+                (li ,materials)))))
+
+  (define (work-template work)
+    (let ((image-filename (cdr (assoc 'image_filename work))))
+      `(div (@ (class "work"))
+          (div (@ (class "work-image"))
+               (img (@ (src ,(string-append "/static/" image-filename)))))
+          ,(render-work-info work)))))

@@ -1,4 +1,4 @@
-(include "data")
+(include "db")
 (module data (select-home-page-data select-work-page-data)
   (import db scheme)
 
@@ -20,6 +20,6 @@
 
   (define (select-work-page-data slug)
     (let ((info (select-info))
-          (work (select-work))
+          (work (select-work slug))
           (works (select-works)))
       (values info work works))))

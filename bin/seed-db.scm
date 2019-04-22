@@ -18,14 +18,14 @@
   (begin
     (execute db "
              insert into gliva_info values
-             ('cv.pdf', 'mattgliva@gmail.com', 'image.jpg');")
+             ('cv.pdf', 'mattgliva@gmail.com', 'image.png');")
     (execute db "
              insert into gliva_work values
-             ('foo', '2019', '1 x 1', 'paper', 'image.jpg', null, 'foo'),
-             ('bar', '2018', '1 x 1', 'ink', 'image.jpg', null, 'bar'),
-             ('baz', '2017', '1 x 1', 'paint', 'image.jpg', 'series', 'baz'),
-             ('qux', '2016', '1 x 1', 'pencil', 'image.jpg', 'series', 'qux'),
-             ('hamburger', '2015', '1 x 1', 'hamburger', 'image.jpg', null, 'hamburger');")))
+             ('foo', '2019', '1 x 1', 'paper', 'image.png', null, 'foo'),
+             ('bar', '2018', '1 x 1', 'ink', 'image.png', null, 'bar'),
+             ('baz', '2017', '1 x 1', 'paint', 'image.png', 'series', 'baz'),
+             ('qux', '2016', '1 x 1', 'pencil', 'image.png', 'series', 'qux'),
+             ('hamburger', '2015', '1 x 1', 'hamburger', 'image.png', null, 'hamburger');")))
 
 (ensure-tables)
 (insert-seed-data)
