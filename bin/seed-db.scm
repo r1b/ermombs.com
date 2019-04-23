@@ -3,7 +3,7 @@
 
 (define ensure-info-table-sql "
   create table if not exists gliva_info
-  (cv_filename text, email text, featured_image_filename text);")
+  (cv_filename text, email text, featured_image_filename text, featured_text text);")
 
 (define ensure-work-table-sql "
   create table if not exists gliva_work
@@ -18,7 +18,7 @@
   (begin
     (execute db "
              insert into gliva_info values
-             ('cv.pdf', 'mattgliva@gmail.com', 'image.png');")
+             ('cv.pdf', 'mattgliva@gmail.com', 'image.png', 'sometimes i get all jacked up\nsometimes i get all worked up\nsometimes i get all wound up');")
     (execute db "
              insert into gliva_work values
              ('foo', '2019', '1 x 1', 'paper', 'image.png', null, 'foo'),

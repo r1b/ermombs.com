@@ -54,7 +54,7 @@
           (email (cdr (assoc 'email info))))
       `(div (@ (class "sidebar"))
           (div (@ (class "info"))
-               (h1 "Gliva")
+               (h1 (a (@ (class "homepage-link") (href "/")) "Gliva"))
                (ul (li (a (@ (href ,(string-append "/static/" cv-filename))) "⚖"))
                    (li (a (@ (href ,(string-append "mailto:" email))) "$"))))
           (nav (@ (class "navbar"))
@@ -63,9 +63,11 @@
   ; ---------------------------------------------------------------------------
 
   (define (featured-content-template info)
-    (let ((featured-image-filename (cdr (assoc 'featured_image_filename info))))
+    (let ((featured-image-filename (cdr (assoc 'featured_image_filename info)))
+          (featured-text (cdr (assoc 'featured_text info))))
       `(div (@ (class "featured-content"))
-          (img (@ (src ,(string-append "/static/" featured-image-filename)))))))
+          (img (@ (src ,(string-append "/static/" featured-image-filename))))
+          (pre (@ (class "featured-text")) ,featured-text))))
 
   ; ---------------------------------------------------------------------------
 

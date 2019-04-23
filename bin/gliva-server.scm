@@ -6,7 +6,7 @@
 (spiffy-user "nobody")
 (spiffy-group "nobody")
 
-; FIXME absolute path, this is just for dev
+; FIXME pull from environment
 (root-path "/Users/rcj/scheme/mattgliva.com/static")
 
 (vhost-map `(("localhost" . ,route-request)))
