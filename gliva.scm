@@ -19,13 +19,13 @@
   ; --------------------------------------------------------------------------
 
   (define (authorized-for-request?)
-    (let ((authorization (header-value 'authorization
-                                       (request-headers (current-request)))))
-      (and (vector? authorization)
-           (eqv? (vector-ref authorization 0) 'basic)
-           (string=? (cdr (assoc 'username (vector-ref authorization 1)))
+    (let* ((headers (request-headers (current-request)))
+           (authorization-method (header-value 'authorization headers))
+           (credentials (header-params 'authorization headers)))
+      (and (eqv? authorization-method 'basic)
+           (string=? (cdr (assoc 'username credentials))
                      (get-environment-variable "GLIVA_USERNAME"))
-           (string=? (cdr (assoc 'password (vector-ref authorization 1)))
+           (string=? (cdr (assoc 'password credentials))
                      (get-environment-variable "GLIVA_PASSWORD")))))
 
   (define (call-with-authorization route-handler . route-params)
