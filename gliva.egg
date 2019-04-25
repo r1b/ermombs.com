@@ -5,8 +5,10 @@
    (extension styles)
    (extension templates
               (component-dependencies styles))
+   (extension pages
+              (component-dependencies templates))
    (extension gliva
-              (component-dependencies data templates))
+              (component-dependencies data pages))
    (program gliva-server
             (component-dependencies gliva)
             (source "bin/gliva-server.scm"))
@@ -19,6 +21,7 @@
  (synopsis "Art website")
  (dependencies intarweb
                matchable
+               multipart-form-data
                posix-groups
                scss
                spiffy

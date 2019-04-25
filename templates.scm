@@ -1,5 +1,3 @@
-(include "styles")
-
 (module templates (base-template featured-content-template sidebar-template work-template)
   (import (chicken format) scheme styles sql-null)
 

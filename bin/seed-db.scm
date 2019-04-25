@@ -1,13 +1,13 @@
-(include "db")
 (import db scheme sqlite3)
 
+; TODO: enforce info singleton
 (define ensure-info-table-sql "
   create table if not exists gliva_info
   (cv_filename text, email text, featured_image_filename text, featured_text text);")
 
 (define ensure-work-table-sql "
   create table if not exists gliva_work
-  (title text, year text, dimensions text, materials text, image_filename text, series text, slug text);")
+  (title text, year text, dimensions text, materials text, image_filename text, series text, slug text unique);")
 
 (define (ensure-tables)
   (begin
