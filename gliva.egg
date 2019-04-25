@@ -27,6 +27,8 @@
                spiffy
                sql-null
                sqlite3
+               srfi-1
+               srfi-13
                sxml-serializer
                uri-common
                utf8)

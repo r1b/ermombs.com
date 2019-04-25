@@ -1,5 +1,5 @@
 (module db (db execute-query execute-insert execute-update)
-  (import (chicken base) miscmacros scheme sqlite3)
+  (import (chicken base) (chicken format) miscmacros scheme srfi-1 srfi-13 sqlite3)
 
   ; --------------------------------------------------------------------------
 
@@ -35,27 +35,27 @@
 
   ; TODO be fUnCtIoNaL
   (define (serialize-update-expr columns data)
-    (let ((exprs '())
+    (let ((set-exprs '())
           (parameters '()))
       (begin
         (for-each (lambda (column)
                     (let ((column-data (assoc column data)))
                       (when column-data
-                        (set! exprs (cons (sprintf "~A = ?"
+                        (set! set-exprs (cons (sprintf "~A = ?"
                                                    (symbol->string column))
-                                          exprs))
+                                          set-exprs))
                         (set! parameters (cons (cdr column-data) parameters)))))
                   columns)
-        (values (string-join exprs ", ") parameters))))
+        (values (string-join set-exprs ", ") parameters))))
 
   (define (execute-update table data id)
-    (let-values (((set-expr parameters (serialize-update-expr (cdr table) data))))
+    (let-values (((set-expr parameters) (serialize-update-expr (cdr table) data)))
       (apply (cut execute-query
                   (sprintf "update ~A set ~A where rowid = ?;"
                            (car table)
                            set-expr)
                   <>)
-             (append parameters (list id))))))
+             (append parameters (list id)))))
 
   ; --------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@
         (for-each (lambda (column)
                   (let ((column-data (assoc column data)))
                         (when column-data
-                          (set! column-exprs (cons (symbol->string column) exprs))
+                          (set! column-exprs (cons (symbol->string column) column-exprs))
                           (set! parameters (cons (cdr column-data) parameters)))))
                 columns)
         (values (string-join column-exprs ", ")
@@ -79,4 +79,4 @@
                               (car table)
                               columns-expr
                               values-expr)
-                     parameters)))
+                     parameters))))

@@ -1,6 +1,7 @@
 (module gliva (route-request)
   (import (chicken base)
           (chicken irregex)
+          (chicken port)
           (chicken process-context)
           data
           intarweb
@@ -10,6 +11,8 @@
           pages
           scheme
           spiffy
+          srfi-1
+          srfi-13
           uri-common
           utf8)
 
@@ -39,16 +42,17 @@
       (begin
         (with-output-to-file (string-join (root-path) "/" filename)
                              (lambda ()
-                               (copy-port (multipart-file-port file)
+                               (copy-port (multipart-file-port multipart-file)
                                           (current-output-port))))
         #f)))
 
   (define (handle-multipart-form-data)
     (let ((form-data (read-multipart-form-data (current-request))))
       (filter-map (lambda (form-input)
-             (if (multipart-file? (cdr form-input))
-                 (save-multipart-file (cdr form-input))
-                 form-input)))))
+                    (if (multipart-file? (cdr form-input))
+                        (save-multipart-file (cdr form-input))
+                        form-input))
+                  form-data)))
 
   ; --------------------------------------------------------------------------
 

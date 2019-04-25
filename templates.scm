@@ -1,4 +1,11 @@
-(module templates (base-template featured-content-template sidebar-template work-template)
+(module templates (admin-base-template
+                    admin-info-template
+                    admin-work-template
+                    admin-works-template
+                    base-template
+                    featured-content-template
+                    sidebar-template
+                    work-template)
   (import (chicken format) scheme styles sql-null)
 
   ; ---------------------------------------------------------------------------
@@ -51,12 +58,12 @@
     (let ((cv-filename (cdr (assoc 'cv_filename info)))
           (email (cdr (assoc 'email info))))
       `(div (@ (class "sidebar"))
-          (div (@ (class "info"))
-               (h1 (a (@ (class "homepage-link") (href "/")) "Gliva"))
-               (ul (li (a (@ (href ,(string-append "/static/" cv-filename))) "⚖"))
-                   (li (a (@ (href ,(string-append "mailto:" email))) "$"))))
-          (nav (@ (class "navbar"))
-               ,(render-works works)))))
+            (div (@ (class "info"))
+                 (h1 (a (@ (class "homepage-link") (href "/")) "Gliva"))
+                 (ul (li (a (@ (href ,(string-append "/static/" cv-filename))) "⚖"))
+                     (li (a (@ (href ,(string-append "mailto:" email))) "$"))))
+            (nav (@ (class "navbar"))
+                 ,(render-works works)))))
 
   ; ---------------------------------------------------------------------------
 
@@ -64,8 +71,8 @@
     (let ((featured-image-filename (cdr (assoc 'featured_image_filename info)))
           (featured-text (cdr (assoc 'featured_text info))))
       `(div (@ (class "featured-content"))
-          (img (@ (src ,(string-append "/static/" featured-image-filename))))
-          (pre (@ (class "featured-text")) ,featured-text))))
+            (img (@ (src ,(string-append "/static/" featured-image-filename))))
+            (pre (@ (class "featured-text")) ,featured-text))))
 
   ; ---------------------------------------------------------------------------
 
@@ -82,6 +89,16 @@
   (define (work-template work)
     (let ((image-filename (cdr (assoc 'image_filename work))))
       `(div (@ (class "work"))
-          (div (@ (class "work-image"))
-               (img (@ (src ,(string-append "/static/" image-filename)))))
-          ,(render-work-info work)))))
+            (div (@ (class "work-image"))
+                 (img (@ (src ,(string-append "/static/" image-filename)))))
+            ,(render-work-info work))))
+
+  ; ---------------------------------------------------------------------------
+
+  (define (admin-base-template) `(div))
+
+  (define (admin-info-template info) `(div))
+
+  (define (admin-work-template work) `(div))
+
+  (define (admin-works-template works) `(div)))

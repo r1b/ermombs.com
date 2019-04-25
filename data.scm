@@ -1,5 +1,11 @@
-(module data (delete-work select-info select-work select-works update-info update-work)
-  (import db scheme)
+(module data (delete-work
+               insert-work
+               select-info
+               select-work
+               select-works
+               update-info
+               update-work)
+  (import (chicken format) db scheme)
 
   ; TODO: Remove bin/seed-db.scm, move types into *-table defs
 
@@ -32,4 +38,4 @@
     (execute-update work-table data id))
 
   (define (delete-work id)
-    (execute-query (sprintf "delete from ~A where rowid = ?;" (car work-table)) id))
+    (execute-query (sprintf "delete from ~A where rowid = ?;" (car work-table)) id)))
