@@ -6,12 +6,7 @@
                     featured-content-template
                     sidebar-template
                     work-template)
-  (import (chicken format) scheme srfi-13 styles sql-null)
-
-  ; ---------------------------------------------------------------------------
-
-  (define (handle-sql-null value)
-    (if (sql-null? value) "" value))
+  (import (chicken format) scheme srfi-13 styles)
 
   ; ---------------------------------------------------------------------------
 
@@ -34,7 +29,7 @@
 
   (define (render-series works rendered-series rendered-works this-series)
     (if (or (null? works)
-            (sql-null? (cdr (assoc 'series (car works))))
+            (string=? (cdr (assoc 'series (car works))) "")
             (not (string=? (cdr (assoc 'series (car works))) this-series)))
         (render-works works
                       (append rendered-works
@@ -50,7 +45,7 @@
         (cons 'ol rendered-works)
         (let* ((work (car works))
                (series (cdr (assoc 'series work))))
-          (if (sql-null? series)
+          (if (string=? series "")
               (render-works (cdr works)
                             (append rendered-works
                                     (list (render-work work))))
@@ -160,10 +155,10 @@
                               (type "text"))))
                   (input (@ (type "submit") (value "Add")))))))
 
-  ; FIXME: DRY
+  ; TODO: DRY
   (define (admin-update-work-template work)
     `(div (@ (class "admin-work"))
-          (form (@ (action ,(string-append "/admin/work/" (number->string (cdr (assoc 'rowid work)))))
+          (form (@ (action ,(string-append "/admin/work/" (cdr (assoc 'rowid work))))
                    (enctype "multipart/form-data")
                    (method "post"))
                 (fieldset
@@ -188,7 +183,7 @@
                   (div (label (@ (for "series")) "series")
                        (input (@ (name "series")
                               (type "text")
-                              (value ,(handle-sql-null (cdr (assoc 'series work)))))))
+                              (value ,(cdr (assoc 'series work))))))
                   (div (label (@ (for "slug")) "slug")
                        (input (@ (name "slug")
                               (type "text")
@@ -197,17 +192,17 @@
 
 
   (define (render-admin-work work)
-    `(tr (td (a (@ (href ,(string-append "/admin/work/"
-                                         (number->string (cdr (assoc 'rowid work))))))
-                ,(number->string (cdr (assoc 'rowid work)))))
+    `(tr (td (a (@ (href ,(string-append "/admin/work/" (cdr (assoc 'rowid work)))))
+                ,(cdr (assoc 'rowid work))))
          (td ,(cdr (assoc 'title work)))
          (td ,(cdr (assoc 'year work)))
          (td ,(cdr (assoc 'dimensions work)))
          (td ,(cdr (assoc 'materials work)))
          (td ,(cdr (assoc 'image_filename work)))
-         (td ,(handle-sql-null (cdr (assoc 'series work))))
+         (td ,(cdr (assoc 'series work)))
          (td ,(cdr (assoc 'slug  work)))
-         (td (button (@ (onclick ,(sprintf "fetch('/admin/work/~A', {method: 'DELETE'}).then(() => location.reload())" (number->string (cdr (assoc 'rowid work)))))) "Delete"))))
+         ; ugly but hey
+         (td (button (@ (onclick ,(sprintf "fetch('/admin/work/~A', {method: 'DELETE'}).then(() => location.reload())" (cdr (assoc 'rowid work))))) "Delete"))))
 
   (define (admin-works-template works)
     `(div (@ (class "admin-works"))

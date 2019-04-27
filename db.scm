@@ -38,17 +38,14 @@
     (let ((set-exprs '())
           (parameters '()))
       (begin
+        ; TODO: DRY
         (for-each (lambda (column)
                     (let ((column-data (assoc column data)))
                       (when column-data
                         (set! set-exprs (cons (sprintf "~A = ?"
                                                        (symbol->string column))
                                               set-exprs))
-                        ; FIXME: move empty field handling to a serialization layer
-                        (set! parameters (cons (if (eof-object? (cdr column-data))
-                                                   (sql-null)
-                                                   (cdr column-data))
-                                               parameters)))))
+                        (set! parameters (cons (cdr column-data) parameters)))))
                   columns)
         (values (string-join set-exprs ", ") parameters))))
 
@@ -71,10 +68,7 @@
                   (let ((column-data (assoc column data)))
                         (when column-data
                           (set! column-exprs (cons (symbol->string column) column-exprs))
-                          (set! parameters (cons (if (eof-object? (cdr column-data))
-                                                   (sql-null)
-                                                   (cdr column-data))
-                                               parameters)))))
+                          (set! parameters (cons (cdr column-data) parameters)))))
                 columns)
         (values (string-join column-exprs ", ")
                 (string-join (make-list (length column-exprs) "?") ", ")

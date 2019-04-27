@@ -1,8 +1,8 @@
 (module gliva (route-request)
   (import (chicken base)
           (chicken irregex)
-          (chicken port)
           (chicken process-context)
+          config
           data
           intarweb
           matchable
@@ -10,6 +10,7 @@
           multipart-form-data
           pages
           scheme
+          serializers
           spiffy
           srfi-1
           srfi-13
@@ -24,9 +25,9 @@
            (credentials (header-params 'authorization headers)))
       (and (eqv? authorization-method 'basic)
            (string=? (cdr (assoc 'username credentials))
-                     (get-environment-variable "GLIVA_USERNAME"))
+                     (cdr (assoc 'username config)))
            (string=? (cdr (assoc 'password credentials))
-                     (get-environment-variable "GLIVA_PASSWORD")))))
+                     (cdr (assoc 'password config))))))
 
   (define (call-with-authorization route-handler . route-params)
     (if (authorized-for-request?)
@@ -36,40 +37,18 @@
 
   ; --------------------------------------------------------------------------
 
-  (define (save-multipart-file multipart-file)
-    ; FIXME: so many things wrong with this
-    (let ((filename (multipart-file-filename multipart-file)))
-      (begin (with-output-to-file (string-append (root-path) "/" filename)
-                             (lambda ()
-                               (copy-port (multipart-file-port multipart-file)
-                                          (current-output-port))))
-             filename)))
-
-  (define (handle-multipart-form-data)
-    (let ((form-data (read-multipart-form-data (current-request))))
-      (map (lambda (form-input)
-             (if (multipart-file? (cdr form-input))
-                 ; FIXME: This is a total hack
-                 (cons (string->symbol (string-append (symbol->string (car form-input)) "_filename"))
-                       (save-multipart-file (cdr form-input)))
-                 form-input))
-           form-data)))
-
-  ; --------------------------------------------------------------------------
-
   (define (handle-home-page)
     (send-response status: 'ok
-                   body: (render-home-page (select-info) (select-sidebar-works))))
+                   body: (render-home-page (serialize-info (select-info))
+                                           (map serialize-work (select-sidebar-works)))))
 
   (define (handle-work-page slug)
     (send-response status: 'ok
-                   body: (render-work-page (select-info)
-                                           (select-work-by-slug slug)
-                                           (select-sidebar-works))))
+                   body: (render-work-page (serialize-info (select-info))
+                                           (serialize-work (select-work-by-slug slug))
+                                           (map serialize-work (select-sidebar-works)))))
 
   ; --------------------------------------------------------------------------
-
-  ; TODO edge cases for all admin pages!
 
   (define (handle-admin-page)
     (send-response status: 'found headers: '((location . (uri-reference "/admin/info")))))
@@ -78,37 +57,37 @@
     (let ((request (current-request)))
       (case (request-method request)
         ((GET) (send-response status: 'ok
-                               body: (render-admin-info-page (select-info))))
+                               body: (render-admin-info-page (serialize-info (select-info)))))
         ((POST) (begin
                   ; Special case: info is a singleton
-                  (update-info (handle-multipart-form-data) 1)
+                  (update-info (deserialize-info (read-multipart-form-data (current-request))) 1)
                   (send-response status: 'ok
-                                 body: (render-admin-info-page (select-info)))))
+                                 body: (render-admin-info-page (serialize-info (select-info))))))
         (else (send-response status: 'method-not-allowed)))))
 
   (define (handle-admin-works-page)
     (let ((request (current-request)))
       (case (request-method request)
         ((GET) (send-response status: 'ok
-                               body: (render-admin-works-page (select-works))))
+                               body: (render-admin-works-page (map serialize-work (select-works)))))
         ((POST) (begin
-                   (insert-work (handle-multipart-form-data))
-                   (send-response status: 'ok
-                                  body: (render-admin-works-page (select-works)))))
+                   (insert-work (deserialize-work (read-multipart-form-data (current-request))))
+                   (send-response status: 'created
+                                  body: (render-admin-works-page (map serialize-work (select-works))))))
         (else (send-response status: 'method-not-allowed)))))
 
   (define (handle-admin-work-page id)
     (let ((request (current-request)))
       (case (request-method request)
         ((GET) (send-response status: 'ok
-                               body: (render-admin-work-page (select-work-by-id id))))
+                               body: (render-admin-work-page (serialize-work (select-work-by-id id)))))
         ((POST) (begin
-                  (update-work (handle-multipart-form-data) id)
+                  (update-work (deserialize-work (read-multipart-form-data (current-request))) id)
                   (send-response status: 'ok
-                                 body: (render-admin-work-page (select-work-by-id id)))))
+                                 body: (render-admin-work-page (serialize-work (select-work-by-id id))))))
         ((DELETE) (begin
-                  (delete-work id)
-                  (send-response status: 'ok)))
+                    (delete-work id)
+                    (send-response status: 'no-content)))
         (else (send-response status: 'method-not-allowed)))))
 
   ; --------------------------------------------------------------------------

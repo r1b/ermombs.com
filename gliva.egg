@@ -8,10 +8,12 @@
               (component-dependencies styles))
    (extension pages
               (component-dependencies templates))
+   (extension serializers)
+   (extension config)
    (extension gliva
-              (component-dependencies data pages))
+              (component-dependencies config data pages serializers))
    (program gliva-server
-            (component-dependencies gliva)
+            (component-dependencies config gliva)
             (source "bin/gliva-server.scm"))
    (program seed-db
             (component-dependencies db)
