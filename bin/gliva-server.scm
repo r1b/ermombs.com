@@ -6,8 +6,10 @@
         spiffy)
 
 (server-port 80)
-(spiffy-user "nobody")
-(spiffy-group "nobody")
+
+; FIXME www-data or whatever
+(spiffy-user "rcj")
+(spiffy-group "staff")
 
 ; FIXME pull from environment
 (root-path "/Users/rcj/scheme/mattgliva.com/static")

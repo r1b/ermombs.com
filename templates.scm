@@ -1,12 +1,17 @@
 (module templates (admin-base-template
                     admin-info-template
-                    admin-work-template
+                    admin-update-work-template
                     admin-works-template
                     base-template
                     featured-content-template
                     sidebar-template
                     work-template)
-  (import (chicken format) scheme styles sql-null)
+  (import (chicken format) scheme srfi-13 styles sql-null)
+
+  ; ---------------------------------------------------------------------------
+
+  (define (handle-sql-null value)
+    (if (sql-null? value) "" value))
 
   ; ---------------------------------------------------------------------------
 
@@ -95,10 +100,125 @@
 
   ; ---------------------------------------------------------------------------
 
-  (define (admin-base-template) `(div))
+  (define (admin-header-template)
+    `(nav (@ class "admin-navbar")
+          (ul (li (a (@ (href "/admin/info")) "info"))
+              (li (a (@ (href "/admin/works")) "works")))))
 
-  (define (admin-info-template info) `(div))
+  (define (admin-base-template #!optional content)
+    `(html (head (title "Matt Gliva - Administration")
+                 (meta (@ (charset "utf-8")))
+           (body (div (@ (class "wrapper"))
+                      ,(admin-header-template)
+                      ,content)))))
 
-  (define (admin-work-template work) `(div))
+  (define (admin-info-template info)
+    `(div (@ (class "admin-info"))
+          (h1 "Info")
+          (form (@ (action "/admin/info")
+                   (enctype "multipart/form-data")
+                   (method "post"))
+                (fieldset
+                  (div (label (@ (for "cv")) "cv")
+                       (input (@ (name "cv") (type "file"))))
+                  (div (label (@ (for "email")) "email")
+                       (input (@ (name "email")
+                                 (type "text")
+                                 (value ,(cdr (assoc 'email info))))))
+                  (div (label (@ (for "featured_image")) "featured_image")
+                       (input (@ (name "featured_image") (type "file"))))
+                  (div (label (@ (for "featured_text")) "featured_text")
+                       (textarea (@ (name "featured_text"))
+                                 ,(cdr (assoc 'featured_text info))))
+                  (input (@ (type "submit") (value "Update")))))))
 
-  (define (admin-works-template works) `(div)))
+  (define (admin-add-work-template)
+    `(div (@ (class "admin-add-work"))
+          (form (@ (action "/admin/works")
+                   (enctype "multipart/form-data")
+                   (method "post"))
+                (fieldset
+                  (div (label (@ (for "title")) "title")
+                       (input (@ (name "title")
+                              (type "text"))))
+                  (div (label (@ (for "year")) "year")
+                       (input (@ (name "year")
+                              (type "text"))))
+                  (div (label (@ (for "dimensions")) "dimensions")
+                       (input (@ (name "dimensions")
+                              (type "text"))))
+                  (div (label (@ (for "materials")) "materials")
+                       (input (@ (name "materials")
+                              (type "text"))))
+                  (div (label (@ (for "image")) image)
+                       (input (@ (name "image") (type "file"))))
+                  (div (label (@ (for "series")) "series")
+                       (input (@ (name "series")
+                              (type "text"))))
+                  (div (label (@ (for "slug")) "slug")
+                       (input (@ (name "slug")
+                              (type "text"))))
+                  (input (@ (type "submit") (value "Add")))))))
+
+  ; FIXME: DRY
+  (define (admin-update-work-template work)
+    `(div (@ (class "admin-work"))
+          (form (@ (action ,(string-append "/admin/work/" (number->string (cdr (assoc 'rowid work)))))
+                   (enctype "multipart/form-data")
+                   (method "post"))
+                (fieldset
+                  (div (label (@ (for "title")) "title")
+                       (input (@ (name "title")
+                              (type "text")
+                              (value ,(cdr (assoc 'title work))))))
+                  (div (label (@ (for "year")) "year")
+                       (input (@ (name "year")
+                              (type "text")
+                              (value ,(cdr (assoc 'year work))))))
+                  (div (label (@ (for "dimensions")) "dimensions")
+                       (input (@ (name "dimensions")
+                              (type "text")
+                              (value ,(cdr (assoc 'dimensions work))))))
+                  (div (label (@ (for "materials")) "materials")
+                       (input (@ (name "materials")
+                              (type "text")
+                              (value ,(cdr (assoc 'materials work))))))
+                  (div (label (@ (for "image")) image)
+                       (input (@ (name "image") (type "file"))))
+                  (div (label (@ (for "series")) "series")
+                       (input (@ (name "series")
+                              (type "text")
+                              (value ,(handle-sql-null (cdr (assoc 'series work)))))))
+                  (div (label (@ (for "slug")) "slug")
+                       (input (@ (name "slug")
+                              (type "text")
+                              (value ,(cdr (assoc 'slug work))))))
+                  (input (@ (type "submit") (value "Update")))))))
+
+
+  (define (render-admin-work work)
+    `(tr (td (a (@ (href ,(string-append "/admin/work/"
+                                         (number->string (cdr (assoc 'rowid work))))))
+                ,(number->string (cdr (assoc 'rowid work)))))
+         (td ,(cdr (assoc 'title work)))
+         (td ,(cdr (assoc 'year work)))
+         (td ,(cdr (assoc 'dimensions work)))
+         (td ,(cdr (assoc 'materials work)))
+         (td ,(cdr (assoc 'image_filename work)))
+         (td ,(handle-sql-null (cdr (assoc 'series work))))
+         (td ,(cdr (assoc 'slug  work)))
+         (td (button (@ (onclick ,(sprintf "fetch('/admin/work/~A', {method: 'DELETE'}).then(() => location.reload())" (number->string (cdr (assoc 'rowid work)))))) "Delete"))))
+
+  (define (admin-works-template works)
+    `(div (@ (class "admin-works"))
+          ,(admin-add-work-template)
+          (table (thead (tr (td "id")
+                            (td "title")
+                            (td "year")
+                            (td "dimensions")
+                            (td "materials")
+                            (td "image_filename")
+                            (td "series")
+                            (td "slug")
+                            (td)))
+                 (tbody ,(map render-admin-work works))))))

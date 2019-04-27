@@ -13,7 +13,7 @@
     (serialize-sxml (admin-base-template (admin-info-template info))))
 
   (define (render-admin-work-page work)
-    (serialize-sxml (admin-base-template (admin-work-template work))))
+    (serialize-sxml (admin-base-template (admin-update-work-template work))))
 
   (define (render-admin-works-page works)
     (serialize-sxml (admin-base-template (admin-works-template works))))

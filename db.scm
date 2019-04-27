@@ -1,5 +1,5 @@
 (module db (db execute-query execute-insert execute-update)
-  (import (chicken base) (chicken format) miscmacros scheme srfi-1 srfi-13 sqlite3)
+  (import (chicken base) (chicken format) miscmacros scheme srfi-1 srfi-13 sql-null sqlite3)
 
   ; --------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@
     (let-values (((statement _) (prepare db sql)))
       (begin
         (unless (null? params)
-          (apply (cut bind-parameters! statement <>) params))
+          (apply (cut bind-parameters! statement <...>) params))
         (get-rows statement))))
 
   ; --------------------------------------------------------------------------
@@ -42,9 +42,13 @@
                     (let ((column-data (assoc column data)))
                       (when column-data
                         (set! set-exprs (cons (sprintf "~A = ?"
-                                                   (symbol->string column))
-                                          set-exprs))
-                        (set! parameters (cons (cdr column-data) parameters)))))
+                                                       (symbol->string column))
+                                              set-exprs))
+                        ; FIXME: move empty field handling to a serialization layer
+                        (set! parameters (cons (if (eof-object? (cdr column-data))
+                                                   (sql-null)
+                                                   (cdr column-data))
+                                               parameters)))))
                   columns)
         (values (string-join set-exprs ", ") parameters))))
 
@@ -54,7 +58,7 @@
                   (sprintf "update ~A set ~A where rowid = ?;"
                            (car table)
                            set-expr)
-                  <>)
+                  <...>)
              (append parameters (list id)))))
 
   ; --------------------------------------------------------------------------
@@ -67,7 +71,10 @@
                   (let ((column-data (assoc column data)))
                         (when column-data
                           (set! column-exprs (cons (symbol->string column) column-exprs))
-                          (set! parameters (cons (cdr column-data) parameters)))))
+                          (set! parameters (cons (if (eof-object? (cdr column-data))
+                                                   (sql-null)
+                                                   (cdr column-data))
+                                               parameters)))))
                 columns)
         (values (string-join column-exprs ", ")
                 (string-join (make-list (length column-exprs) "?") ", ")
@@ -75,8 +82,10 @@
 
   (define (execute-insert table data)
     (let-values (((columns-expr values-expr parameters) (serialize-insert-expr (cdr table) data)))
-      (execute-query (sprintf "insert into ~A (~A) values (~A);"
-                              (car table)
-                              columns-expr
-                              values-expr)
-                     parameters))))
+      (apply (cut execute-query
+                  (sprintf "insert into ~A (~A) values (~A);"
+                           (car table)
+                           columns-expr
+                           values-expr)
+                  <...>)
+             parameters))))

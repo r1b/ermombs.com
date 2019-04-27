@@ -39,46 +39,47 @@
   (define (save-multipart-file multipart-file)
     ; FIXME: so many things wrong with this
     (let ((filename (multipart-file-filename multipart-file)))
-      (begin
-        (with-output-to-file (string-join (root-path) "/" filename)
+      (begin (with-output-to-file (string-append (root-path) "/" filename)
                              (lambda ()
                                (copy-port (multipart-file-port multipart-file)
                                           (current-output-port))))
-        #f)))
+             filename)))
 
   (define (handle-multipart-form-data)
     (let ((form-data (read-multipart-form-data (current-request))))
-      (filter-map (lambda (form-input)
-                    (if (multipart-file? (cdr form-input))
-                        (save-multipart-file (cdr form-input))
-                        form-input))
-                  form-data)))
+      (map (lambda (form-input)
+             (if (multipart-file? (cdr form-input))
+                 ; FIXME: This is a total hack
+                 (cons (string->symbol (string-append (symbol->string (car form-input)) "_filename"))
+                       (save-multipart-file (cdr form-input)))
+                 form-input))
+           form-data)))
 
   ; --------------------------------------------------------------------------
 
   (define (handle-home-page)
     (send-response status: 'ok
-                   body: (render-home-page (select-info) (select-works))))
+                   body: (render-home-page (select-info) (select-sidebar-works))))
 
   (define (handle-work-page slug)
     (send-response status: 'ok
                    body: (render-work-page (select-info)
-                                           (select-work slug)
-                                           (select-works))))
+                                           (select-work-by-slug slug)
+                                           (select-sidebar-works))))
 
   ; --------------------------------------------------------------------------
 
   ; TODO edge cases for all admin pages!
 
   (define (handle-admin-page)
-    (send-response status: 'ok body: (render-admin-page)))
+    (send-response status: 'found headers: '((location . (uri-reference "/admin/info")))))
 
   (define (handle-admin-info-page)
     (let ((request (current-request)))
       (case (request-method request)
-        ('(get) (send-response status: 'ok
+        ((GET) (send-response status: 'ok
                                body: (render-admin-info-page (select-info))))
-        ('(post) (begin
+        ((POST) (begin
                   ; Special case: info is a singleton
                   (update-info (handle-multipart-form-data) 1)
                   (send-response status: 'ok
@@ -88,9 +89,9 @@
   (define (handle-admin-works-page)
     (let ((request (current-request)))
       (case (request-method request)
-        ('(get) (send-response status: 'ok
+        ((GET) (send-response status: 'ok
                                body: (render-admin-works-page (select-works))))
-        ('(post) (begin
+        ((POST) (begin
                    (insert-work (handle-multipart-form-data))
                    (send-response status: 'ok
                                   body: (render-admin-works-page (select-works)))))
@@ -99,12 +100,15 @@
   (define (handle-admin-work-page id)
     (let ((request (current-request)))
       (case (request-method request)
-        ('(get) (send-response status: 'ok
-                               body: (render-admin-work-page (select-work id))))
-        ('(post) (begin
+        ((GET) (send-response status: 'ok
+                               body: (render-admin-work-page (select-work-by-id id))))
+        ((POST) (begin
                   (update-work (handle-multipart-form-data) id)
                   (send-response status: 'ok
-                                 body: (render-admin-work-page (select-work id)))))
+                                 body: (render-admin-work-page (select-work-by-id id)))))
+        ((DELETE) (begin
+                  (delete-work id)
+                  (send-response status: 'ok)))
         (else (send-response status: 'method-not-allowed)))))
 
   ; --------------------------------------------------------------------------
