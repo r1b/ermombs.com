@@ -4,11 +4,11 @@
         scheme
         spiffy)
 
-(server-port (cdr (assoc 'port config)))
-(spiffy-user (cdr (assoc 'user config)))
-(spiffy-group (cdr (assoc 'group config)))
-(root-path (cdr (assoc 'static-root config)))
-(vhost-map `((,(cdr (assoc 'host config)) . ,route-request)))
+(server-port (alist-ref 'port config))
+(spiffy-user (alist-ref 'user config))
+(spiffy-group (alist-ref 'group config))
+(root-path (alist-ref 'static-root config))
+(vhost-map `((,(alist-ref 'host config) . ,route-request)))
 
 (start-server)
 

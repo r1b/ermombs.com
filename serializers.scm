@@ -1,5 +1,7 @@
 (module serializers (deserialize-info deserialize-work serialize-info serialize-work)
-  (import (chicken port)
+  (import (chicken base)
+          (chicken io)
+          (chicken port)
           (chicken string)
           multipart-form-data
           scheme
@@ -23,9 +25,10 @@
       (begin
         (with-output-to-file (string-append (root-path) "/" filename)
                              (lambda ()
-                               ; SECURITY: If this is very large you're in trouble
-                               (copy-port (multipart-file-port multipart-file)
-                                          (current-output-port))))
+                               ; FIXME: This is slow for large files.
+                               (write-string (read-string #f (multipart-file-port multipart-file))
+                                             #f
+                                             (current-output-port))))
         filename)))
 
   (define (handle-file-field field basename)
@@ -55,7 +58,7 @@
   (define (deserialize-work work)
     (filter-map (lambda (field)
                   (case (car field)
-                    ((image) (handle-file-field field (cdr (assoc 'slug work))))
+                    ((image) (handle-file-field field (alist-ref 'slug work)))
                     ((year) (cons 'year (string->number (cdr field))))
                     ((series) (if (eof-object? (cdr field)) (cons 'series (sql-null)) field))
                     (else field)))
