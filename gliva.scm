@@ -105,15 +105,13 @@
       (("work" id) (handle-admin-work-page id))
       (_ (handle-404-page))))
 
-  (define (route-request continue)
+  (define (route-request _)
     (let ((path (uri-path (request-uri (current-request)))))
-      (begin
-        (match path
-          (('/ "") (handle-home-page))
-          (('/ "favicon.ico") (send-static-file "favicon.ico"))
-          (('/ "static" filename) (send-static-file filename))
-          (('/ "work" slug) (handle-work-page slug))
-          (('/ "admin" tail ...) (call-with-authorization route-admin-request
-                                                          tail))
-          (_ (handle-404-page)))
-        (continue)))))
+      (match path
+        (('/ "") (handle-home-page))
+        (('/ "favicon.ico") (send-static-file "favicon.ico"))
+        (('/ "static" filename) (send-static-file filename))
+        (('/ "work" slug) (handle-work-page slug))
+        (('/ "admin" tail ...) (call-with-authorization route-admin-request
+                                                        tail))
+        (_ (handle-404-page))))))

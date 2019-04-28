@@ -1,4 +1,4 @@
-((component-options (csc-options "-:a64"))
+((component-options (csc-options "-O3"))
  (components
    (extension db)
    (extension data
