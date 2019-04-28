@@ -12,6 +12,7 @@
 (spiffy-group (alist-ref 'group config))
 (root-path (alist-ref 'static-root config))
 (vhost-map `((".*" . ,route-request)))
+(trusted-proxies '("127.0.0.1"))
 
 (start-server)
 
