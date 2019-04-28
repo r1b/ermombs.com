@@ -110,7 +110,6 @@
       (begin
         (match path
           (('/ "") (handle-home-page))
-          ; FIXME: serve static files w / nginx
           (('/ "favicon.ico") (send-static-file "favicon.ico"))
           (('/ "static" filename) (send-static-file filename))
           (('/ "work" slug) (handle-work-page slug))

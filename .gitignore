@@ -10,3 +10,4 @@ gliva-server
 seed-db
 static/*
 !static/*.ico
+run-prod.sh
