@@ -15,7 +15,9 @@
                        env-var)
             (exit 1)))))
 
-  (define config `((group . ,(ensure-config-value "GLIVA_GROUP"))
+  (define config `((access-log . ,(ensure-config-value "GLIVA_ACCESS_LOG"))
+                   (error-log . ,(ensure-config-value "GLIVA_ERROR_LOG"))
+                   (group . ,(ensure-config-value "GLIVA_GROUP"))
                    (host . ,(ensure-config-value "GLIVA_HOST"))
                    (password . ,(ensure-config-value "GLIVA_PASSWORD"))
                    (port . ,(ensure-config-value "GLIVA_PORT" string->number))

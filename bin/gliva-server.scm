@@ -4,11 +4,14 @@
         scheme
         spiffy)
 
+(access-log (alist-ref 'access-log config))
+(error-log (alist-ref 'error-log config))
+(server-bind-address (alist-ref 'host config))
 (server-port (alist-ref 'port config))
 (spiffy-user (alist-ref 'user config))
 (spiffy-group (alist-ref 'group config))
 (root-path (alist-ref 'static-root config))
-(vhost-map `((,(alist-ref 'host config) . ,route-request)))
+(vhost-map `((".*" . ,route-request)))
 
 (start-server)
 
