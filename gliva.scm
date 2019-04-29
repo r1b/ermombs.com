@@ -110,6 +110,7 @@
       (match path
         (('/ "") (handle-home-page))
         (('/ "favicon.ico") (send-static-file "favicon.ico"))
+        (('/ "robots.txt") (send-static-file "robots.txt"))
         (('/ "static" filename) (send-static-file filename))
         (('/ "work" slug) (handle-work-page slug))
         (('/ "admin" tail ...) (call-with-authorization route-admin-request

@@ -11,9 +11,9 @@
   ; ---------------------------------------------------------------------------
 
   (define (base-template sidebar-template featured-content-template)
-    `(html (head (title "Matt Gliva")
+    `(html (head (title "Matt Gliva - Portfolio")
                  (meta (@ (charset "utf-8")))
-                 (meta (@ (name "description") (description "Matt Gliva")))
+                 (meta (@ (name "description") (content  "Matt Gliva is a Brooklyn-based artist, musician and professional art handler.")))
                  (meta (@ (name "viewport") (content "width=device-width, initial-scale=1")))
                  (style (@ type "text/css") ,(render-styles)))
            (body (div (@ (class "wrapper"))
@@ -71,7 +71,8 @@
     (let ((featured-image-filename (alist-ref 'featured_image_filename info))
           (featured-text (alist-ref 'featured_text info)))
       `(div (@ (class "featured-content"))
-            (img (@ (src ,(string-append "/static/" featured-image-filename))))
+            (img (@ (src ,(string-append "/static/" featured-image-filename))
+                    (alt "Featured image")))
             (pre (@ (class "featured-text")) ,featured-text))))
 
   ; ---------------------------------------------------------------------------
@@ -87,11 +88,12 @@
                 (li ,materials)))))
 
   (define (work-template work)
-    (let ((image-filename (alist-ref 'image_filename work)))
-      `(div (@ (class "work"))
-            (div (@ (class "work-image"))
-                 (img (@ (src ,(string-append "/static/" image-filename)))))
-            ,(render-work-info work))))
+    `(div (@ (class "work"))
+          (div (@ (class "work-image"))
+               (img (@ (src ,(string-append "/static/"
+                                            (alist-ref 'image_filename work)))
+                       (alt ,(alist-ref 'title work)))))
+          ,(render-work-info work)))
 
   ; ---------------------------------------------------------------------------
 
