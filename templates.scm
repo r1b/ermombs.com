@@ -11,7 +11,8 @@
   ; ---------------------------------------------------------------------------
 
   (define (base-template sidebar-template featured-content-template)
-    `(html (head (title "Matt Gliva - Portfolio")
+    `(html (@ (lang "en"))
+           (head (title "Matt Gliva - Portfolio")
                  (meta (@ (charset "utf-8")))
                  (meta (@ (name "description") (content  "Matt Gliva is a Brooklyn-based artist, musician and professional art handler.")))
                  (meta (@ (name "viewport") (content "width=device-width, initial-scale=1")))
@@ -50,6 +51,7 @@
                             (append rendered-works
                                     (list (render-work work))))
               (render-series (cdr works)
+                             ; FIXME: bad for screenreaders
                              (list `(li (b ,series)) (render-work work))
                              rendered-works
                              series)))))
