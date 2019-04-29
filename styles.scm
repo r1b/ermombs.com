@@ -2,8 +2,8 @@
   (import scss scheme)
 
   (define (render-styles)
-    (scss->css `(css (html (font "1em Courier"))
-                     (li (list-style "none") (padding "3px 0px"))
+    (scss->css `(css (html (font "1.8em Courier"))
+                     (li (list-style "none") (padding "5px 5px"))
                      ((// ul li) (display "inline"))
                      ((ol ul) (padding-left "20px"))
                      ((= class wrapper) (display "flex") (height "100%"))
