@@ -3,9 +3,7 @@
    (extension db)
    (extension data
               (component-dependencies db))
-   (extension styles)
-   (extension templates
-              (component-dependencies styles))
+   (extension templates)
    (extension pages
               (component-dependencies templates))
    (extension serializers)

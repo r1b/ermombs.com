@@ -10,5 +10,6 @@ gliva-server
 seed-db
 static/*
 !static/*.ico
+!static/*.css
 !static/robots.txt
 run-prod.sh

@@ -6,7 +6,7 @@
                     featured-content-template
                     sidebar-template
                     work-template)
-  (import (chicken base) (chicken format) scheme srfi-13 styles)
+  (import (chicken base) (chicken format) scheme srfi-13)
 
   ; ---------------------------------------------------------------------------
 
@@ -14,9 +14,9 @@
     `(html (@ (lang "en"))
            (head (title "Matt Gliva - Portfolio")
                  (meta (@ (charset "utf-8")))
-                 (meta (@ (name "description") (content  "Matt Gliva is a Brooklyn-based artist, musician and professional art handler.")))
+                 (meta (@ (name "description") (content  "Matt Gliva is a Brooklyn-based artist, musician and professional fuck-face.")))
                  (meta (@ (name "viewport") (content "width=device-width, initial-scale=1")))
-                 (style (@ type "text/css") ,(render-styles)))
+                 (link (@ (href "/static/gliva.css") (rel "stylesheet"))))
            (body (div (@ (class "wrapper"))
                       ,sidebar-template
                       ,featured-content-template)))`)
@@ -34,7 +34,7 @@
             (not (string=? (alist-ref 'series (car works)) this-series)))
         (render-works works
                       (append rendered-works
-                              (list (cons 'ol rendered-series))))
+                              (list `(li (b ,this-series)) (cons 'ol rendered-series))))
         (render-series (cdr works)
                        (append rendered-series
                                (list (render-work (car works))))
@@ -51,8 +51,7 @@
                             (append rendered-works
                                     (list (render-work work))))
               (render-series (cdr works)
-                             ; FIXME: bad for screenreaders
-                             (list `(li (b ,series)) (render-work work))
+                             (list (render-work work))
                              rendered-works
                              series)))))
 
@@ -75,7 +74,7 @@
       `(div (@ (class "featured-content"))
             (img (@ (src ,(string-append "/static/" featured-image-filename))
                     (alt "Featured image")))
-            (pre (@ (class "featured-text")) ,featured-text))))
+            (span (@ (class "featured-text")) ,featured-text))))
 
   ; ---------------------------------------------------------------------------
 
