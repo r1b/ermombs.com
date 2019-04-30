@@ -106,9 +106,11 @@
   (define (admin-base-template #!optional content)
     `(html (head (title "Matt Gliva - Administration")
                  (meta (@ (charset "utf-8")))
+                 ; FIXME: For some reason this breaks if I don't add empty content
+                 (script (@ (src "/static/gliva.js") (type "text/javascript")) ""))
            (body (div (@ (class "wrapper"))
                       ,(admin-header-template)
-                      ,content)))))
+                      ,content))))
 
   (define (admin-info-template info)
     `(div (@ (class "admin-info"))
@@ -204,8 +206,7 @@
          (td ,(alist-ref 'image_filename work))
          (td ,(alist-ref 'series work))
          (td ,(alist-ref 'slug  work))
-         ; ugly but hey
-         (td (button (@ (onclick ,(sprintf "fetch('/admin/work/~A', {method: 'DELETE'}).then(() => location.reload())" (alist-ref 'rowid work)))) "Delete"))))
+         (td (button (@ (onclick ,(sprintf "deleteWork(~A)" (alist-ref 'rowid work)))) "Delete"))))
 
   (define (admin-works-template works)
     `(div (@ (class "admin-works"))
