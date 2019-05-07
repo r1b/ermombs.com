@@ -19,7 +19,7 @@
                  (link (@ (href "/static/gliva.css") (rel "stylesheet"))))
            (body (div (@ (class "wrapper"))
                       ,sidebar-template
-                      ,featured-content-template)))`)
+                      ,featured-content-template))))
 
   ; ---------------------------------------------------------------------------
 
