@@ -5,6 +5,7 @@ html {
 
 body {
     height: 100%;
+    margin: 0 10px 0;
 }
 
 li {
@@ -21,7 +22,7 @@ ol, ul {
 }
 
 img {
-    width: 300px;
+    width: 500px;
 }
 
 .wrapper {
@@ -65,6 +66,9 @@ img {
     }
     ol {
         padding: 0;
+    }
+    img {
+        width: 300px;
     }
     .sidebar li {
         display: inline;
