@@ -101,4 +101,7 @@ img {
         margin-top: 33px;
         width: 100%;
     }
+    .work-metadata {
+        display: none;
+    }
 }

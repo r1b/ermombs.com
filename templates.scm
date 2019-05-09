@@ -85,8 +85,9 @@
           (materials (alist-ref 'materials work)))
       `(div (@ (class "work-info"))
             (ol (li ,(sprintf "~A, ~A" title year))
-                (li ,dimensions)
-                (li ,materials)))))
+                (div (@ (class "work-metadata"))
+                     (li ,dimensions)
+                     (li ,materials))))))
 
   (define (work-template work)
     `(div (@ (class "work"))
