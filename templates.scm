@@ -34,7 +34,7 @@
             (not (string=? (alist-ref 'series (car works)) this-series)))
         (render-works works
                       (append rendered-works
-                              (list `(li (b ,this-series)) (cons 'ol rendered-series))))
+                              (list `(li ,this-series) (cons 'ol rendered-series))))
         (render-series (cdr works)
                        (append rendered-series
                                (list (render-work (car works))))
@@ -84,7 +84,7 @@
           (dimensions (alist-ref 'dimensions work))
           (materials (alist-ref 'materials work)))
       `(div (@ (class "work-info"))
-            (ol (li (b ,(sprintf "~A, ~A" title year)))
+            (ol (li ,(sprintf "~A, ~A" title year))
                 (li ,dimensions)
                 (li ,materials)))))
 

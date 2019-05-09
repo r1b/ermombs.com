@@ -8,6 +8,10 @@ body {
     margin: 0 10px 0;
 }
 
+h1 {
+    font-weight: lighter;
+}
+
 li {
     list-style: none;
     padding: 5px 5px;
