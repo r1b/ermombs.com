@@ -6,7 +6,7 @@
 * Collapse works in series into a single link
 * 0.9em font on desktop
 * no bold
-* images true center
+x images true center
 
 ## work template
 
