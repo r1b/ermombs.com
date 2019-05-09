@@ -16,10 +16,18 @@
                  (meta (@ (charset "utf-8")))
                  (meta (@ (name "description") (content  "Matt Gliva is a Brooklyn-based artist, musician and professional fuck-face.")))
                  (meta (@ (name "viewport") (content "width=device-width, initial-scale=1")))
-                 (link (@ (href "/static/gliva.css") (rel "stylesheet"))))
+                 (link (@ (href "/static/easter-egg.css") (rel "stylesheet")))
+                 (link (@ (href "/static/gliva.css") (rel "stylesheet")))
+                 (link (@ (href "https://unpkg.com/splitting/dist/splitting.css")
+                          (rel "stylesheet")))
+                 (link (@ (href "https://unpkg.com/splitting/dist/splitting-cells.css")
+                          (rel "stylesheet")))
+                 (script (@ (src "https://unpkg.com/splitting/dist/splitting.min.js")
+                            (type "text/javascript")) ""))
            (body (div (@ (class "wrapper"))
                       ,sidebar-template
-                      ,featured-content-template))))
+                      ,featured-content-template)
+                 (script (@ (src "/static/easter-egg.js") (type "text/javascript")) ""))))
 
   ; ---------------------------------------------------------------------------
 
@@ -74,7 +82,7 @@
       `(div (@ (class "featured-content"))
             (img (@ (src ,(string-append "/static/" featured-image-filename))
                     (alt "Featured image")))
-            (span (@ (class "featured-text")) ,featured-text))))
+            (span (@ (class "featured-text") (data-splitting "chars")) ,featured-text))))
 
   ; ---------------------------------------------------------------------------
 
