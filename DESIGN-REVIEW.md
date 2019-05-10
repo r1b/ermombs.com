@@ -16,3 +16,12 @@ x No materials / other metadata on mobile
 
 * Navigate through works in series
 
+### info hierarchy
+
+* /series/{name}
+    * Index w / `featured_image`, `featured_text`
+* /series/{name}/{work-name}
+
+### modified sidebar
+
+* Essentially just "lift" the nested works to the top level
