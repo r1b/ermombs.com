@@ -1,5 +1,5 @@
-(module db (db execute-query execute-insert execute-update)
-  (import (chicken base) (chicken format) miscmacros scheme srfi-1 srfi-13 sql-null sqlite3)
+(module db (execute-query)
+  (import (chicken base) scheme sqlite3)
 
   ; --------------------------------------------------------------------------
 
@@ -29,57 +29,4 @@
       (begin
         (unless (null? params)
           (apply (cut bind-parameters! statement <...>) params))
-        (get-rows statement))))
-
-  ; --------------------------------------------------------------------------
-
-  ; TODO be fUnCtIoNaL
-  (define (serialize-update-expr columns data)
-    (let ((set-exprs '())
-          (parameters '()))
-      (begin
-        ; TODO: DRY
-        (for-each (lambda (column)
-                    (let ((column-data (assoc column data)))
-                      (when column-data
-                        (set! set-exprs (cons (sprintf "~A = ?"
-                                                       (symbol->string column))
-                                              set-exprs))
-                        (set! parameters (cons (cdr column-data) parameters)))))
-                  columns)
-        (values (string-join set-exprs ", ") parameters))))
-
-  (define (execute-update table data id)
-    (let-values (((set-expr parameters) (serialize-update-expr (cdr table) data)))
-      (apply (cut execute-query
-                  (sprintf "update ~A set ~A where rowid = ?;"
-                           (car table)
-                           set-expr)
-                  <...>)
-             (append parameters (list id)))))
-
-  ; --------------------------------------------------------------------------
-
-  (define (serialize-insert-expr columns data)
-    (let ((column-exprs '())
-          (parameters '()))
-      (begin
-        (for-each (lambda (column)
-                  (let ((column-data (assoc column data)))
-                        (when column-data
-                          (set! column-exprs (cons (symbol->string column) column-exprs))
-                          (set! parameters (cons (cdr column-data) parameters)))))
-                columns)
-        (values (string-join column-exprs ", ")
-                (string-join (make-list (length column-exprs) "?") ", ")
-                parameters))))
-
-  (define (execute-insert table data)
-    (let-values (((columns-expr values-expr parameters) (serialize-insert-expr (cdr table) data)))
-      (apply (cut execute-query
-                  (sprintf "insert into ~A (~A) values (~A);"
-                           (car table)
-                           columns-expr
-                           values-expr)
-                  <...>)
-             parameters))))
+        (get-rows statement)))))

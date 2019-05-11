@@ -9,27 +9,21 @@
    (extension serializers)
    (extension config)
    (extension gliva
-              (component-dependencies config data pages serializers))
+              (component-dependencies data pages serializers))
    (program gliva-server
             (component-dependencies config gliva)
-            (source "bin/gliva-server.scm"))
-   (program seed-db
-            (component-dependencies db)
-            (source "bin/seed-db.scm")))
+            (source "bin/gliva-server.scm")))
  (version "1.0")
  (license "BSD")
  (author "Robert C Jensen")
  (synopsis "Art website")
  (dependencies intarweb
                matchable
-               multipart-form-data
                posix-groups
-               scss
                spiffy
                sql-null
                sqlite3
                srfi-1
-               srfi-13
                sxml-serializer
                uri-common
                utf8)
