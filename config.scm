@@ -10,12 +10,11 @@
       (if value
           (deserialize value)
           (begin
-            (fprintf (open-output-file* 2)
-                       "`~A` unset\n"
-                       env-var)
+            (fprintf (open-output-file* 2) "`~A` unset\n" env-var)
             (exit 1)))))
 
   (define config `((access-log . ,(ensure-config-value "GLIVA_ACCESS_LOG"))
+                   (database . ,(ensure-config-value "GLIVA_DATABASE"))
                    (error-log . ,(ensure-config-value "GLIVA_ERROR_LOG"))
                    (group . ,(ensure-config-value "GLIVA_GROUP"))
                    (host . ,(ensure-config-value "GLIVA_HOST"))

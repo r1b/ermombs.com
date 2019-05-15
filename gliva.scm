@@ -5,7 +5,6 @@
           matchable
           pages
           scheme
-          serializers
           spiffy
           uri-common)
 
@@ -13,27 +12,27 @@
 
   (define (handle-home-page)
     (send-response status: 'ok
-                   body: (render-home-page (serialize-info (select-info))
-                                           (map serialize-work (select-sidebar)))))
+                   body: (render-home-page (select-info)
+                                           (select-sidebar-links))))
 
-  (define (handle-series-page slug)
-    (send-response status: 'ok
-                   body: (render-series-page (serialize-info (select-info))
-                                             (serialize-series (select-series-by-slug slug))
-                                             (map serialize-work (select-series-sidebar slug)))))
+  ; (define (handle-series-page slug)
+  ;   (send-response status: 'ok
+  ;                  body: (render-series-page (select-info)
+  ;                                            (select-series-by-slug slug)
+  ;                                            (select-series-sidebar-links slug))))
 
-  (define (handle-series-work-page series-slug work-slug)
-    (send-response status: 'ok
-                   body: (render-series-work-page (serialize-info (select-info))
-                                                  (serialize-series (select-series-by-slug series-slug))
-                                                  (serialize-work (select-work-by-slug work-slug))
-                                                  (map serialize-work (select-series-sidebar series-slug)))))
+  ; (define (handle-series-work-page series-slug work-slug)
+  ;   (send-response status: 'ok
+  ;                  body: (render-series-work-page (select-info)
+  ;                                                 (select-series-sidebar-links series-slug)
+  ;                                                 (select-series-by-slug series-slug)
+  ;                                                 (select-work-by-slug work-slug))))
 
   (define (handle-work-page slug)
     (send-response status: 'ok
-                   body: (render-work-page (serialize-info (select-info))
-                                           (serialize-work (select-work-by-slug slug))
-                                           (map serialize-work (select-sidebar)))))
+                   body: (render-work-page (select-info)
+                                           (select-sidebar-links)
+                                           (select-work-by-slug slug))))
 
   ; --------------------------------------------------------------------------
 
@@ -48,8 +47,8 @@
         (('/ "") (handle-home-page))
         (('/ "favicon.ico") (send-static-file "favicon.ico"))
         (('/ "robots.txt") (send-static-file "robots.txt"))
-        (('/ "series" series-slug work-slug) (handle-series-work-page series-slug work-slug))
-        (('/ "series" slug) (handle-series-page slug))
+        ; (('/ "series" series-slug work-slug) (handle-series-work-page series-slug work-slug))
+        ; (('/ "series" slug) (handle-series-page slug))
         (('/ "static" filename) (send-static-file filename))
         (('/ "work" slug) (handle-work-page slug))
         (_ (handle-404-page))))))

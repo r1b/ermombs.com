@@ -1,15 +1,15 @@
 ((component-options (csc-options "-O3"))
  (components
-   (extension db)
+   (extension config)
+   (extension db
+              (component-dependencies config))
    (extension data
               (component-dependencies db))
    (extension templates)
    (extension pages
               (component-dependencies templates))
-   (extension serializers)
-   (extension config)
    (extension gliva
-              (component-dependencies data pages serializers))
+              (component-dependencies data pages))
    (program gliva-server
             (component-dependencies config gliva)
             (source "bin/gliva-server.scm")))

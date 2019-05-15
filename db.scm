@@ -1,29 +1,9 @@
 (module db (execute-query)
-  (import (chicken base) scheme sqlite3)
+  (import (chicken base) config scheme sqlite3)
 
   ; --------------------------------------------------------------------------
 
-  (define db (open-database "gliva.db"))
-
-  ; --------------------------------------------------------------------------
-
-  (define-function db
-                   slugify_series
-                   1
-                   (lambda (slug)
-                     (concat "/series/" slug)))
-
-  (define-function db
-                   slugify_series_work
-                   2
-                   (lambda (series-slug work-slug)
-                     (concat "/series/" series-slug "/" work-slug)))
-
-  (define-function db
-                   slugify_work
-                   1
-                   (lambda (slug)
-                     (concat "/work/" slug)))
+  (define db (open-database (alist-ref 'database config)))
 
   ; --------------------------------------------------------------------------
 
