@@ -1,23 +1,33 @@
 (module data (select-info
-               select-sidebar-works
-               select-work-by-slug
-               select-works)
+               select-series-by-slug
+               select-series-sidebar
+               select-sidebar
+               select-work-by-slug)
   (import db scheme)
 
   ; --------------------------------------------------------------------------
 
+  ; home page & artist metadata
+
   (define (select-info)
-    (execute-query "select rowid, * from gliva_info;"))
+    (execute-query "select * from info;"))
 
   ; --------------------------------------------------------------------------
 
-  (define (select-sidebar-works)
-    ; sorry about the mess - we want to order the works in a somewhat
-    ; intelligent way so that a series with recent works bubbles up
-    (execute-query "select title,series,slug,year,coalesce(max_year, year) as year_order from gliva_work left join (select series as series_group, max(year) as max_year from gliva_work where series_group is not null group by series_group) on series = series_group order by year_order desc, series;"))
+  ; navs
+
+  (define (select-series-sidebar slug)
+    (execute-query "select work.title, slugify_series_work(?,work.slug) as slug, work.year, series.slug from work left join series on work.series_id = series.id where series.slug = ? order by work.year desc;" slug slug))
+
+  (define (select-sidebar)
+    (execute-query "select work.title, slugify_work(work.slug) as slug, work.year from work where work.series_id is null union select series.title, slugify_series(series.slug) as slug, year from series left join (select work.series_id, max(work.year) as year from work) on series.id = series_id order by year desc, title;"))
+
+  ; --------------------------------------------------------------------------
+
+  ; pages
+
+  (define (select-series-by-slug slug)
+    (execute-query "select * from series where slug = ?" slug))
 
   (define (select-work-by-slug slug)
-    (execute-query "select rowid, * from gliva_work where slug = ?;" slug))
-
-  (define (select-works)
-    (execute-query "select rowid, * from gliva_work;")))
+    (execute-query "select * from work where slug = ?;" slug)))

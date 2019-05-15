@@ -7,6 +7,26 @@
 
   ; --------------------------------------------------------------------------
 
+  (define-function db
+                   slugify_series
+                   1
+                   (lambda (slug)
+                     (concat "/series/" slug)))
+
+  (define-function db
+                   slugify_series_work
+                   2
+                   (lambda (series-slug work-slug)
+                     (concat "/series/" series-slug "/" work-slug)))
+
+  (define-function db
+                   slugify_work
+                   1
+                   (lambda (slug)
+                     (concat "/work/" slug)))
+
+  ; --------------------------------------------------------------------------
+
   (define (row->result statement)
     (letrec ((n (column-count statement))
              (get-columns
