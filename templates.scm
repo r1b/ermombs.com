@@ -28,11 +28,11 @@
 
   (define (base-template sidebar-template featured-content-template)
     `(html (@ (lang "en"))
-           (head (title "Matt Gliva - Portfolio")
+           (head (title "E.R. Mombs")
                  (meta (@ (charset "utf-8")))
-                 (meta (@ (name "description") (content  "Matt Gliva is a Brooklyn-based artist")))
+                 (meta (@ (name "description") (content "E.R. Mombs is a Brooklyn-based artist")))
                  (meta (@ (name "viewport") (content "width=device-width, initial-scale=1")))
-                 (link (@ (href ,(slugify-static "gliva.css")) (rel "stylesheet"))))
+                 (link (@ (href ,(slugify-static "ermombs.css")) (rel "stylesheet"))))
            (body (div (@ (class "wrapper"))
                       ,sidebar-template
                       ,featured-content-template))))
@@ -50,7 +50,7 @@
           (email (alist-ref 'email info)))
       `(div (@ (class "sidebar"))
             (div (@ (class "info"))
-                 (h1 (a (@ (class "homepage-link") (href "/")) "Gliva"))
+                 (h1 (a (@ (class "homepage-link") (href "/")) "E.R. Mombs"))
                  (ul (li (a (@ (href ,(slugify-static cv-filename))) "⚖"))
                      (li (a (@ (href ,(string-append "mailto:" email))) "$"))))
             (nav (@ (class "navbar"))
