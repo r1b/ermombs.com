@@ -8,10 +8,4 @@
 *.db
 gliva-server
 PROFILE*
-seed-db
-static/*
-!static/*.ico
-!static/*.css
-!static/*.js
-!static/robots.txt
 run-prod.sh

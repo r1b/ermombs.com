@@ -1,8 +1,7 @@
-(module pages (render-admin-page
-                render-admin-info-page
-                render-admin-work-page
-                render-admin-works-page
+(module pages (render-404-page
                 render-home-page
+                render-series-page
+                render-series-work-page
                 render-work-page)
   (import sxml-serializer scheme templates)
 
@@ -10,22 +9,21 @@
     (string-append "<!DOCTYPE html>"
                    (serialize-sxml sxml indent: #f method: 'html)))
 
-  (define (render-admin-page)
-    (render (admin-base-template)))
+  (define (render-404-page)
+    (render `(h1 "NoT fOuNd")))
 
-  (define (render-admin-info-page info)
-    (render (admin-base-template (admin-info-template info))))
+  (define (render-home-page info links)
+    (render (base-template (sidebar-template info links)
+                           (featured-content-template info))))
 
-  (define (render-admin-work-page work)
-    (render (admin-base-template (admin-update-work-template work))))
+  (define (render-work-page info links work)
+    (render (base-template (sidebar-template info links)
+                           (work-template work))))
 
-  (define (render-admin-works-page works)
-    (render (admin-base-template (admin-works-template works))))
+  (define (render-series-page info links series)
+    (render (base-template (sidebar-template info links)
+                           (featured-content-template series))))
 
-  (define (render-home-page info works)
-    (render (base-template (sidebar-template info works)
-                                   (featured-content-template info))))
-
-  (define (render-work-page info work works)
-    (render (base-template (sidebar-template info works)
-                                   (work-template work)))))
+    (define (render-series-work-page info links work)
+      (render (base-template (sidebar-template info links)
+                             (work-template work)))))

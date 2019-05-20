@@ -2,7 +2,8 @@
         config
         gliva
         scheme
-        spiffy)
+        spiffy
+        utf8)
 
 (access-log (alist-ref 'access-log config))
 (error-log (alist-ref 'error-log config))

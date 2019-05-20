@@ -1,35 +1,29 @@
 ((component-options (csc-options "-O3"))
  (components
-   (extension db)
+   (extension config)
+   (extension db
+              (component-dependencies config))
    (extension data
               (component-dependencies db))
    (extension templates)
    (extension pages
               (component-dependencies templates))
-   (extension serializers)
-   (extension config)
    (extension gliva
-              (component-dependencies config data pages serializers))
+              (component-dependencies data pages))
    (program gliva-server
             (component-dependencies config gliva)
-            (source "bin/gliva-server.scm"))
-   (program seed-db
-            (component-dependencies db)
-            (source "bin/seed-db.scm")))
+            (source "bin/gliva-server.scm")))
  (version "1.0")
  (license "BSD")
  (author "Robert C Jensen")
  (synopsis "Art website")
  (dependencies intarweb
                matchable
-               multipart-form-data
                posix-groups
-               scss
                spiffy
                sql-null
                sqlite3
                srfi-1
-               srfi-13
                sxml-serializer
                uri-common
                utf8)

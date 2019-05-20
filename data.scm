@@ -1,49 +1,34 @@
-(module data (delete-work
-               insert-work
-               select-info
-               select-sidebar-works
-               select-work-by-id
-               select-work-by-slug
-               select-works
-               update-info
-               update-work)
-  (import (chicken format) db scheme)
+(module data (select-info
+               select-series-by-slug
+               select-series-sidebar-links
+               select-sidebar-links
+               select-work-by-slug)
+  (import db scheme)
 
-  ; TODO: Remove bin/seed-db.scm, move types into *-table defs
 
   ; --------------------------------------------------------------------------
 
-  (define info-table '(gliva_info . (cv_filename email featured_image_filename featured_text)))
+  ; home page & artist metadata
 
   (define (select-info)
-    (execute-query "select rowid, * from gliva_info;"))
-
-  (define (update-info data id)
-    (execute-update info-table data id))
+    (execute-query "select * from info;"))
 
   ; --------------------------------------------------------------------------
 
-  (define work-table '(gliva_work . (title year dimensions materials image_filename series slug)))
+  ; navs
 
-  (define (select-sidebar-works)
-    ; sorry about the mess - we want to order the works in a somewhat
-    ; intelligent way so that a series with recent works bubbles up
-    (execute-query "select title,series,slug,year,coalesce(max_year, year) as year_order from gliva_work left join (select series as series_group, max(year) as max_year from gliva_work where series_group is not null group by series_group) on series = series_group order by year_order desc, series;"))
+  (define (select-series-sidebar-links slug)
+    (execute-query "select work.title, work.slug as work_slug, series.slug as series_slug, \"series-work\" as type from work left join series on work.series_id = series.id where series.slug = ? order by work.year desc;" many: #t params: (list slug)))
 
-  (define (select-work-by-id id)
-    (execute-query "select rowid, * from gliva_work where rowid = ?;" id))
+  (define (select-sidebar-links)
+    (execute-query "select work.title, work.slug, work.year, \"work\" as type from work where work.series_id is null union select series.title, series.slug, year, \"series\" as type from series left join (select work.series_id, max(work.year) as year from work) on series.id = series_id order by year desc, title;" many: #t))
+
+  ; --------------------------------------------------------------------------
+
+  ; pages
+
+  (define (select-series-by-slug slug)
+    (execute-query "select * from series where slug = ?" params: (list slug)))
 
   (define (select-work-by-slug slug)
-    (execute-query "select rowid, * from gliva_work where slug = ?;" slug))
-
-  (define (select-works)
-    (execute-query "select rowid, * from gliva_work;"))
-
-  (define (insert-work data)
-    (execute-insert work-table data))
-
-  (define (update-work data id)
-    (execute-update work-table data id))
-
-  (define (delete-work id)
-    (execute-query (sprintf "delete from ~A where rowid = ?;" (car work-table)) id)))
+    (execute-query "select * from work where slug = ?;" params: (list slug))))
