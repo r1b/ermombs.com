@@ -19,14 +19,14 @@
                                                       (column-data statement index)))))))))
       (get-columns (sub1 n))))
 
-  (define (get-rows statement #!optional (rows '()))
+  (define (get-rows statement many #!optional (rows '()))
     (if (not (step! statement))
-        (if (= (length rows) 1) (car rows) rows)
-        (get-rows statement (append rows (list (row->result statement))))))
+        (if (not many) (car rows) rows)
+        (get-rows statement many (append rows (list (row->result statement))))))
 
-  (define (execute-query sql . params)
+  (define (execute-query sql #!key (many #f) (params '()))
     (let-values (((statement _) (prepare db sql)))
       (begin
         (unless (null? params)
           (apply (cut bind-parameters! statement <...>) params))
-        (get-rows statement)))))
+        (get-rows statement many)))))

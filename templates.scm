@@ -2,27 +2,27 @@
                     featured-content-template
                     sidebar-template
                     work-template)
-  (import (chicken base) (chicken format) scheme)
+  (import (chicken base) (chicken format) matchable scheme)
 
   ; ---------------------------------------------------------------------------
 
-  (define (slugify-series slug)
-    (string-append "/series/" slug))
+  (define (slugify-series link)
+    (string-append "/series/" (alist-ref 'slug link)))
 
-  (define (slugify-series-work series-slug work-slug)
-    (string-append "/series/" series-slug "/" work-slug))
+  (define (slugify-series-work link)
+    (string-append "/series/" (alist-ref 'series_slug link) "/" (alist-ref 'work_slug link)))
 
   (define (slugify-static filename)
     (string-append "/static/" filename))
 
-  (define (slugify-work slug)
-    (string-append "/work/" slug))
+  (define (slugify-work link)
+    (string-append "/work/" (alist-ref 'slug link)))
 
-  ; FIXME dumb
-  (define (slugify-sidebar slug type)
-    (if (string=? type "series")
-        (slugify-series slug)
-        (slugify-work slug)))
+  (define (slugify-sidebar link type)
+    (match type
+      ("series" (slugify-series link))
+      ("series-work" (slugify-series-work link))
+      ("work" (slugify-work link))))
 
   ; --------------------------------------------------------------------------
 
@@ -40,10 +40,9 @@
   ; ---------------------------------------------------------------------------
 
   (define (render-sidebar-link link)
-    (let ((slug (alist-ref 'slug link))
-          (title (alist-ref 'title link))
+    (let ((title (alist-ref 'title link))
           (type (alist-ref 'type link)))
-      `(li (a (@ (href ,(slugify-sidebar slug type))) ,title))))
+      `(li (a (@ (href ,(slugify-sidebar link type))) ,title))))
 
   (define (sidebar-template info links)
     (let ((cv-filename (alist-ref 'cv_filename info))
@@ -58,9 +57,9 @@
 
   ; ---------------------------------------------------------------------------
 
-  (define (featured-content-template info)
-    (let ((featured-image-filename (alist-ref 'featured_image_filename info))
-          (featured-text (alist-ref 'featured_text info)))
+  (define (featured-content-template content)
+    (let ((featured-image-filename (alist-ref 'featured_image_filename content))
+          (featured-text (alist-ref 'featured_text content)))
       `(div (@ (class "featured-content"))
             (img (@ (src ,(slugify-static featured-image-filename))
                     (alt "Featured image")))
